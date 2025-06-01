@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UbuntuCycle - Community Sharing</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>UbuntuCycle</h1>
+        <p class="motto">"You have a problem with wasting money. Don't let that guilt stop you from at least benefiting the ones around you."</p>
+    </header>
+
+    <main>
+        <div class="items-grid">
+            {% for item in items %}
+            <div class="item-card {{ item.status.lower() }}">
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" class="item-image">
+                {% else %}
+                <div class="no-image">No Image</div>
+                {% endif %}
+                
+                <div class="item-details">
+                    <h3>{{ item.title }}</h3>
+                    {% if item.description %}
+                    <p class="description">{{ item.description }}</p>
+                    {% endif %}
+                    {% if item.category %}
+                    <span class="category">{{ item.category }}</span>
+                    {% endif %}
+                    <div class="status">Status: {{ item.status }}</div>
+                    
+                    {% if item.status == "Available" %}
+                    <form class="claim-form" onsubmit="submitClaim(event, '{{ item.id }}')">
+                        <input type="text" name="claimer_info" placeholder="Your name and contact info" required>
+                        <button type="submit">Claim Item</button>
+                    </form>
+                    {% elif item.status == "Claimed" %}
+                    <div class="claimed-info">This item has been claimed</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not items %}
+        <div class="no-items">
+            <p>No items available at the moment. Check back later!</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <script>
+        async function submitClaim(event, itemId) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(`/items/${itemId}/claim`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('Item claimed successfully!');
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.detail);
+                }
+            } catch (error) {
+                alert('Error claiming item: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

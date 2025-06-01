@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UbuntuCycle - Admin Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>UbuntuCycle - Admin Panel</h1>
+        <nav>
+            <a href="/">View Public Site</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="add-item-section">
+            <h2>Add New Item</h2>
+            <form action="/admin/items/add" method="post" enctype="multipart/form-data" class="add-item-form">
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" placeholder="e.g., Electronics, Clothing, Books">
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Image</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                
+                <button type="submit">Add Item</button>
+            </form>
+        </section>
+
+        <section class="items-management">
+            <h2>Manage Items</h2>
+            <div class="items-list">
+                {% for item in items %}
+                <div class="admin-item-card">
+                    <div class="item-info">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}" class="admin-item-image">
+                        {% endif %}
+                        <div class="item-details">
+                            <h3>{{ item.title }}</h3>
+                            {% if item.description %}
+                            <p>{{ item.description }}</p>
+                            {% endif %}
+                            {% if item.category %}
+                            <span class="category">{{ item.category }}</span>
+                            {% endif %}
+                            <div class="item-meta">
+                                <span>Posted: {{ item.date_posted.strftime('%Y-%m-%d %H:%M') }}</span>
+                                <span>Status: {{ item.status }}</span>
+                            </div>
+                            {% if item.claimed_by_note %}
+                            <div class="claimed-by">
+                                <strong>Claimed by:</strong> {{ item.claimed_by_note }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form action="/admin/items/{{ item.id }}/update_status" method="post" class="status-form">
+                        <div class="form-group">
+                            <label for="status_{{ item.id }}">Status</label>
+                            <select id="status_{{ item.id }}" name="status">
+                                <option value="Available" {% if item.status == "Available" %}selected{% endif %}>Available</option>
+                                <option value="Claimed" {% if item.status == "Claimed" %}selected{% endif %}>Claimed</option>
+                                <option value="Gone" {% if item.status == "Gone" %}selected{% endif %}>Gone</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="claimed_by_note_{{ item.id }}">Claimed by note</label>
+                            <input type="text" id="claimed_by_note_{{ item.id }}" name="claimed_by_note" 
+                                   value="{{ item.claimed_by_note or '' }}" 
+                                   placeholder="Contact info or notes">
+                        </div>
+                        
+                        <button type="submit">Update</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if not items %}
+            <div class="no-items">
+                <p>No items have been added yet.</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
