@@ -54,31 +54,30 @@ ubuntu_cycle/
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your-repository-url>
-    cd ubuntu_cycle
+    git clone https://github.com/Rudolf07688/ubuntu-cycle.git
+    cd ubuntu-cycle
     ```
 
 2.  **Create and Activate a Virtual Environment:**
     ```bash
     python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    source venv/bin/activate
     ```
 
 3.  **Install Dependencies:**
     ```bash
-    pip install -r requirements.txt
+    uv pip install .
     ```
-    Expected `requirements.txt` content:
+    Expected requirements:
     ```
-    fastapi
-    uvicorn[standard]
-    pydantic
-    sqlalchemy
-    python-dotenv
     cloudinary
+    fastapi
     jinja2
-    python-multipart # For file uploads
-    # psycopg2-binary # (Optional, if switching to PostgreSQL later)
+    pydantic
+    python
+    python
+    sqlalchemy
+    uvicorn
     ```
 
 4.  **Set up Environment Variables:**
